@@ -1,23 +1,18 @@
 import zmq
 import time
-#from multiprocessing.connection import Listener #This also doesn't seem necessary
 import sys
-from database.database_functions import *
-from database.database_functions import pull_protocol
-from database.connect import connect
-from protocol_handler.protocol_transfer import transfer
-from protocol_handler.protocol_parser import * 
-# from zeroMQ_OT2 import #This doesn't seem necesary
 
-def handler(Protocol_ID, user, ip, port): 
-    path, protocol = pull_protocol(Protocol_ID)  
+from protocol_transfer import transfer
+from protocol_parser import * 
+
+def handler(Protocol_path, user, ip, port): 
     #print("Protocol saved into " + path + "directory")
-    status = transfer(path, user, ip) # Gives it IP and username to send script over
-    if(status == 1): # error 
-        return "", "", 1
+    #status = transfer(path, user, ip) # Gives it IP and username to send script over
+    #if(status == 1): # error 
+    #   return "", "", 1
 
     #print(protocol)
-    msg_error, msg_output, msg_errorcode = send_message_to_OT2("python3 "+ "/data/" + protocol.split("/")[-1], user, ip, port)
+    msg_error, msg_output, msg_errorcode = send_message_to_OT2("python3 "+ "/data/" + Protocol_path.split("/")[-1], user, ip, port)
     
     return msg_output, msg_error, msg_errorcode
 
@@ -44,8 +39,5 @@ def main_null():
     print("This is not meant to have a main function")
 
 if __name__ == "__main__":
-    filename = "/ot2_workcell/protocol_handling/protocol.py"
-    new_name = protocol_parser(filename)
-    protocol_ID = insert_protocol(new_name, "OT2_1")
-    protocol_ID = 7
-    handler(protocol_ID)
+    filename = "../ot2_example.py"
+    handler(filename,"root","127.0.0.1","8085")
